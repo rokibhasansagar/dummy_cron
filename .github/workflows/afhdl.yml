@@ -3,6 +3,7 @@ name: ALPS Pie v3.100 Keepalive
 on:
   schedule:
     - cron: '0 0 * * *'
+  push:
   workflow_dispatch:
 
 jobs:
@@ -24,13 +25,14 @@ jobs:
       run: |
         LIST="$(<"./t-alps-release-p0.mp2-V3.100/addresses_and_md5sum.txt")"
         mkdir files && cd files
-        while ((${SECONDS_LEFT:=5} > 0)); do
+        while ((${SECONDS_LEFT:=10} > 0)); do
           printf "Please wait %ss ...\n" "${SECONDS_LEFT}"; sleep 1; SECONDS_LEFT=$((SECONDS_LEFT - 1))
         done
         set -xv
         for i in $LIST; do
           afh-dl -l ${i%:*} || true
           fname=$(ls -- *.tar.*)
+          md=${i#:*}
           until test "$(md5sum $fname | awk '{print $1}')" -eq "${md}"; do
             afh-dl -l ${i%:*} || true
           done
