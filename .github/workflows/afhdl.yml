@@ -3,8 +3,6 @@ name: ALPS Pie v3.100 Keepalive
 on:
   schedule:
     - cron: '0 0 * * *'
-  push:
-    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -14,7 +12,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.9
+    - name: Set up Python 3.8
       uses: actions/setup-python@v2
       with:
         python-version: 3.8
@@ -26,10 +24,16 @@ jobs:
       run: |
         LIST="$(<"./t-alps-release-p0.mp2-V3.100/addresses_and_md5sum.txt")"
         mkdir files && cd files
+        while ((${SECONDS_LEFT:=5} > 0)); do
+          printf "Please wait %ss ...\n" "${SECONDS_LEFT}"; sleep 1; SECONDS_LEFT=$((SECONDS_LEFT - 1))
+        done
+        set -xv
         for i in $LIST; do
-          md=${i#:*}
-          until test $(md5sum $(ls -- *.tar.gz*) | awk '{print $1}') = ${md}; do
+          afh-dl -l ${i%:*} || true
+          fname=$(ls -- *.tar.*)
+          until test $(md5sum $fname | awk '{print $1}') = ${md}; do
             afh-dl -l ${i%:*} || true
           done
-          rm -rf -- *tar*
+          rm -rf -- *.tar.*
         done
+        set +xv
