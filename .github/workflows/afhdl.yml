@@ -20,7 +20,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install afhdl
+        pip install afh-dl
     - name: Download files
       run: |
         set -v
