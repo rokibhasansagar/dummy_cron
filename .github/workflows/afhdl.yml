@@ -23,14 +23,12 @@ jobs:
         pip install afh-dl
     - name: Download files
       run: |
-        set -v
-        pwd
-        ls -lAog
-        LIST="$(<"./t-alps-release-p0.mp2-V3.100/urls.txt")"
-        echo $LIST
-        set +v
+        LIST="$(<"./t-alps-release-p0.mp2-V3.100/addresses_and_md5sum.txt")"
         mkdir files && cd files
         for i in $LIST; do
-          afh-dl -l $i
-          rm -rf *
+          md=${i#:*}
+          until test $(md5sum * | awk '{print $1}') = ${md}; do
+            afh-dl -l ${i%:*} || true
+          done
+          rm -rf -- *tar*
         done
