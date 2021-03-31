@@ -31,7 +31,7 @@ jobs:
         for i in $LIST; do
           afh-dl -l ${i%:*} || true
           fname=$(ls -- *.tar.*)
-          until test $(md5sum $fname | awk '{print $1}') = ${md}; do
+          until test "$(md5sum $fname | awk '{print $1}')" -eq "${md}"; do
             afh-dl -l ${i%:*} || true
           done
           rm -rf -- *.tar.*
