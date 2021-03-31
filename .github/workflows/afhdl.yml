@@ -31,11 +31,12 @@ jobs:
         set -xv
         for i in $LIST; do
           afh-dl -l ${i%:*} || true
-          fname=$(ls -- *.tar.*)
-          md=${i#:*}
-          until test "$(md5sum $fname | awk '{print $1}')" -eq "${md}"; do
-            afh-dl -l ${i%:*} || true
-          done
-          rm -rf -- *.tar.*
+          rm -rf * 2>/dev/null
+          sleep 1s
+        done
+        for j in $LIST; do
+          afh-dl -l ${j%:*} || true
+          rm -rf * 2>/dev/null
+          sleep 1s
         done
         set +xv
