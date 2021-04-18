@@ -26,6 +26,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install afh-dl
     - name: Download files
+      timeout-minutes: 240
       run: |
         LIST="$(<"./t-alps-release-p0.mp2-V3.100/addresses_and_md5sum.txt")"
         mkdir files && cd files
