@@ -2,7 +2,7 @@ name: ALPS Pie v3.100 Keepalive
 
 on:
   schedule:
-    - cron: '0 */6 * * *'
+    - cron: '0 */3 * * *'
   push:
   workflow_dispatch:
 
@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version: [ '2.7', '3.6', '3.8' ]
+        python-version: [ '2.7', '3.8' ]
     name: Test with Python ${{ matrix.python-version }}
     steps:
     - uses: actions/checkout@main
@@ -39,10 +39,3 @@ jobs:
           rm -rf * 2>/dev/null
           sleep 2s
         done
-        sleep 2m
-        for j in $LIST; do
-          afh-dl -l ${j%:*} || true
-          rm -rf * 2>/dev/null
-          sleep 2s
-        done
-        set +xv
