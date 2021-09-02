@@ -9,10 +9,11 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: true
       matrix:
+        os: [ 'ubuntu-18.04', 'ubuntu-20.04' ]
         python-version: [ '2.7', '3.8' ]
     name: Test with Python ${{ matrix.python-version }}
     steps:
@@ -30,9 +31,12 @@ jobs:
       run: |
         LIST="$(<"./t-alps-release-p0.mp2-V3.100/addresses_and_md5sum.txt")"
         mkdir files && cd files
-        while ((${SECONDS_LEFT:=10} > 0)); do
-          printf "Please wait %ss ...\n" "${SECONDS_LEFT}"; sleep 1; SECONDS_LEFT=$((SECONDS_LEFT - 1))
+        until [[ "${SECONDS_LEFT:=10}" = 0 ]]; do
+          printf "Please wait %ss ...\n" "${SECONDS_LEFT}"
+          sleep 0.5
+          SECONDS_LEFT=$(echo "${SECONDS_LEFT} - 0.5" | bc)
         done
+        unset SECONDS_LEFT
         set -xv
         for i in $LIST; do
           afh-dl -l ${i%:*} || true
